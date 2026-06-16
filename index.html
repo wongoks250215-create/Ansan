@@ -1,1 +1,188 @@
 # Ansan
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안산시 생생맛집 전체 가이드</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e1e4e8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #2c3e50, #4a90e2);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #e1e4e8;
+            padding-bottom: 8px;
+        }
+
+        .restaurant-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1a202c;
+        }
+
+        .category-badge {
+            background-color: #e8f4fd;
+            color: var(--primary-color);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .summary {
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 15px;
+            text-align: justify;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            background-color: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .info-item {
+            color: #4a5568;
+            margin-bottom: 5px;
+            display: flex;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-item strong {
+            min-width: 65px;
+            color: #2d3748;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>안산시 생생맛집 가이드 (전체 매장 수록)</h1>
+        <p>파일 내 등록된 총 46개의 검증된 안산시 맛집 리스트를 분류별로 확인하세요.</p>
+    </header>
+
+    <div class="filter-container">
+        <button class="filter-btn active" onclick="filterCategory('전체')">전체보기</button>
+        <button class="filter-btn" onclick="filterCategory('한식')">한식</button>
+        <button class="filter-btn" onclick="filterCategory('중식')">중식</button>
+        <button class="filter-btn" onclick="filterCategory('양식')">양식</button>
+        <button class="filter-btn" onclick="filterCategory('일식')">일식</button>
+        <button class="filter-btn" onclick="filterCategory('횟집')">횟집</button>
+        <button class="filter-btn" onclick="filterCategory('면집')">면집/냉면/메밀</button>
+    </div>
+
+    <div class="grid-container" id="restaurantGrid"></div>
+
+    <script>
+        // CSV 파일 내 누락 없는 총 46개 전체 매장 데이터 베이스
+        const restaurants = [
+            { name: "이천영양돌솥밥", desc: "균형 잡힌 영양 식단과 신토불이 음식을 고집스럽게 지켜온 한정식 식당이다. 손이 많이 가는 한정식을 같은 자리에서 27년간이나 운영했다는 것만 봐도 사장님의 한정식에 대한 집념과 애정이 오롯이 느껴진다.", summary: "건강하고 맛있는 돌솥밥 영양 한정식", tel: "031-408-2008", address: "경기도 안산시 상록구 항가울로 7", seats: "1층 30석, 2층 60석", parking: "인근 주차 가능", holiday: "명절", category: "한식" },
+            { name: "청대문", desc: "강원도 고지에서 자생하는 곤드레와 질경이는 이름만 들어도 건강한 자연의 맛이 느껴진다. 곤드레나물을 비롯해 푸릇한 자연으로 맛을 내는 귀한 식당이다.", summary: "사랑과 정성으로 빚은 곤드레나물 한 상", tel: "031-403-5545", address: "경기도 안산시 상록구 본삼로 11 빛나프라자 2층", seats: "좌석 200석", parking: "유료주차장", holiday: "설날, 추석 당일 휴무", category: "한식" },
+            { name: "토담", desc: "강원도 출신 사장님의 정성 어린 음식을 제대로 맛볼 수 있는 곳. 손맛 좋은 사장님이 어릴 때 먹었던 강원도 음식을 손님의 입맛에 맞게 재해석해 내놓는 20년 전통의 건강 만점 영양음식점이다.", summary: "강원도 토속음식의 모든 것", tel: "031-438-7246", address: "경기도 안산시 상록구 서암로4길 35", seats: "72석", parking: "식당 앞 공영주차장", holiday: "첫째, 셋째 주 일요일", category: "한식" },
+            { name: "갈비락", desc: "수제 소스로 숙성하여 갈비 맛과 숯불 멋이 살아있는 숯불갈비 매력 만점의 식당이다. 고객들에게 갈비의 즐거움(락)을 맛있는 행복으로 전해준다.", summary: "수제소스로 숙성한 왕갈비의 참맛", tel: "031-408-9595", address: "경기도 안산시 상록구 석호로 101-1, 1층(사동)", seats: "2층 100석, 3층 100석", parking: "1층 전용", holiday: "명절", category: "한식" },
+            { name: "쉐프의 정육식당", desc: "국내에 몇 안 되는 워터에이징 처리를 한 무항생제 고기를 연탄불에 구워 먹는 고기전문점이다. 섭씨 0도에서 3주 숙성하여 육질이 매우 부드럽고 풍미가 우수하다.", summary: "최고급 금돼지·숙성소고기 숯불구이 맛집", tel: "031-417-1004", address: "경기도 안산시 상록구 감골1로 35 월드스포션 1층", seats: "40석", parking: "건물 전용", holiday: "명절", category: "한식" },
+            { name: "엄마손손두부", desc: "입안을 가득 채우는 부드러운 질감과 고소함이 일품인 어머니 손맛의 전통 두부 요리 전문점이다.", summary: "어머니 손맛으로 빚은 맛있는 두부 요리의 진수", tel: "031-501-1530", address: "경기도 안산시 상록구 각골서로 6", seats: "60석", parking: "주차장 주변", holiday: "첫째 셋째주 일요일", category: "한식" },
+            { name: "거북이쌈밥", desc: "연잎 쌈밥에 14가지 쌈채소를 곁들여 먹는 가성비 최고 수준의 쌈밥전문점이다. 여유롭게 대화를 나누며 맛있고 건강한 한 끼를 맛볼 수 있다.", summary: "가성비 최고의 연잎쌈밥과 엄지 척 식도락 간
